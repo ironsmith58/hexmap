@@ -10,6 +10,9 @@ import (
 	"math"
 )
 
+/*
+ * Integer Absolute Value
+ */
 func iabs(a int) int {
 	if a < 0 {
 		return -a
@@ -17,6 +20,9 @@ func iabs(a int) int {
 	return a
 }
 
+/*
+ * Integer Max of 2 numbers
+ */
 func imax(a int, b int) int {
 	if a > b {
 		return a
@@ -24,6 +30,7 @@ func imax(a int, b int) int {
 	return b
 }
 
+/* PI to enough digits for our purposes */
 const M_PI = 3.14159265358979323846
 
 type Point struct {
@@ -99,51 +106,51 @@ func NewLayout(o Orientation, s Point, c Point) Layout {
 
 // Forward declarations
 
-func hex_add(a Hex, b Hex) Hex {
+func HexAdd(a Hex, b Hex) Hex {
 	return NewHex(a.q+b.q, a.r+b.r, a.s+b.s)
 }
 
-func hex_subtract(a Hex, b Hex) Hex {
+func HexSubtract(a Hex, b Hex) Hex {
 	return NewHex(a.q-b.q, a.r-b.r, a.s-b.s)
 }
 
-func hex_scale(a Hex, k int) Hex {
+func HexScale(a Hex, k int) Hex {
 	return NewHex(a.q*k, a.r*k, a.s*k)
 }
 
-func hex_rotate_left(a Hex) Hex {
+func HexRotateLeft(a Hex) Hex {
 	return NewHex(-a.s, -a.q, -a.r)
 }
 
-func hex_rotate_right(a Hex) Hex {
+func HexRotateRight(a Hex) Hex {
 	return NewHex(-a.r, -a.s, -a.q)
 }
 
-var hex_directions = []Hex{Hex{1, 0, -1}, Hex{1, -1, 0}, Hex{0, -1, 1}, Hex{-1, 0, 1}, Hex{-1, 1, 0}, Hex{0, 1, -1}}
+var hexDirections = []Hex{{1, 0, -1}, {1, -1, 0}, {0, -1, 1}, {-1, 0, 1}, {-1, 1, 0}, {0, 1, -1}}
 
-func hex_direction(direction int) Hex {
-	return hex_directions[direction]
+func HexDirection(direction int) Hex {
+	return hexDirections[direction]
 }
 
-func hex_neighbor(hex Hex, direction int) Hex {
-	return hex_add(hex, hex_direction(direction))
+func HexNeighbor(hex Hex, direction int) Hex {
+	return HexAdd(hex, HexDirection(direction))
 }
 
-var hex_diagonals = []Hex{Hex{2, -1, -1}, Hex{1, -2, 1}, Hex{-1, -1, 2}, Hex{-2, 1, 1}, Hex{-1, 2, -1}, Hex{1, 1, -2}}
+var hexDiagonals = []Hex{{2, -1, -1}, {1, -2, 1}, {-1, -1, 2}, {-2, 1, 1}, {-1, 2, -1}, {1, 1, -2}}
 
-func hex_diagonal_neighbor(hex Hex, direction int) Hex {
-	return hex_add(hex, hex_diagonals[direction])
+func HexDiagonalNeighbor(hex Hex, direction int) Hex {
+	return HexAdd(hex, hexDiagonals[direction])
 }
 
-func hex_length(hex Hex) int {
+func HexLength(hex Hex) int {
 	return int((iabs(hex.q) + iabs(hex.r) + iabs(hex.s)) / 2)
 }
 
-func hex_distance(a Hex, b Hex) int {
-	return hex_length(hex_subtract(a, b))
+func HexDistance(a Hex, b Hex) int {
+	return HexLength(HexSubtract(a, b))
 }
 
-func hex_round(h FractionalHex) Hex {
+func HexRound(h FractionalHex) Hex {
 	qi := math.Round(h.q)
 	ri := math.Round(h.r)
 	si := math.Round(h.s)
@@ -162,15 +169,15 @@ func hex_round(h FractionalHex) Hex {
 	return Hex{int(qi), int(ri), int(si)}
 }
 
-func hex_lerp(a FractionalHex, b FractionalHex, t float64) FractionalHex {
+func HexLerp(a FractionalHex, b FractionalHex, t float64) FractionalHex {
 	q := a.q*(1.0-t) + b.q*t
 	r := a.r*(1.0-t) + b.r*t
 	s := a.s*(1.0-t) + b.s*t
 	return FractionalHex{q, r, s}
 }
 
-func hex_linedraw(a Hex, b Hex) []Hex {
-	N := hex_distance(a, b)
+func HexLineDraw(a Hex, b Hex) []Hex {
+	N := HexDistance(a, b)
 	aq := float64(a.q)
 	ar := float64(a.r)
 	as := float64(a.s)
@@ -182,7 +189,7 @@ func hex_linedraw(a Hex, b Hex) []Hex {
 	var results []Hex
 	var step float64 = 1.0 / float64(imax(N, 1))
 	for i := 0; i <= N; i++ {
-		results = append(results, hex_round(hex_lerp(a_nudge, b_nudge, step*float64(i))))
+		results = append(results, HexRound(HexLerp(a_nudge, b_nudge, step*float64(i))))
 	}
 	return results
 }
@@ -190,7 +197,7 @@ func hex_linedraw(a Hex, b Hex) []Hex {
 const EVEN = 1
 const ODD = -1
 
-func qoffset_from_cube(offset int, h Hex) OffsetCoord {
+func QoffsetFromCube(offset int, h Hex) OffsetCoord {
 	col := h.q
 	row := h.r + int((h.q+offset*(h.q&1))/2)
 	if offset != EVEN && offset != ODD {
@@ -200,7 +207,7 @@ func qoffset_from_cube(offset int, h Hex) OffsetCoord {
 	return OffsetCoord{col, row}
 }
 
-func qoffset_to_cube(offset int, h OffsetCoord) Hex {
+func QoffsetToCube(offset int, h OffsetCoord) Hex {
 	q := h.col
 	r := h.row - int((h.col+offset*(h.col&1))/2)
 	s := -q - r
@@ -211,7 +218,7 @@ func qoffset_to_cube(offset int, h OffsetCoord) Hex {
 	return Hex{q, r, s}
 }
 
-func roffset_from_cube(offset int, h Hex) OffsetCoord {
+func RoffsetFromCube(offset int, h Hex) OffsetCoord {
 	col := h.q + int((h.r+offset*(h.r&1))/2)
 	row := h.r
 	if offset != EVEN && offset != ODD {
@@ -221,7 +228,7 @@ func roffset_from_cube(offset int, h Hex) OffsetCoord {
 	return OffsetCoord{col, row}
 }
 
-func roffset_to_cube(offset int, h OffsetCoord) Hex {
+func RoffsetToCube(offset int, h OffsetCoord) Hex {
 	q := h.col - int((h.row+offset*(h.row&1))/2)
 	r := h.row
 	s := -q - r
@@ -232,36 +239,36 @@ func roffset_to_cube(offset int, h OffsetCoord) Hex {
 	return Hex{q, r, s}
 }
 
-func qdoubled_from_cube(h Hex) DoubledCoord {
+func QdoubledFromCube(h Hex) DoubledCoord {
 	col := h.q
 	row := 2*h.r + h.q
 	return DoubledCoord{col, row}
 }
 
-func qdoubled_to_cube(h DoubledCoord) Hex {
+func QdoubledToCube(h DoubledCoord) Hex {
 	q := h.col
 	r := int((h.row - h.col) / 2)
 	s := -q - r
 	return Hex{q, r, s}
 }
 
-func rdoubled_from_cube(h Hex) DoubledCoord {
+func RdoubledFromCube(h Hex) DoubledCoord {
 	col := 2*h.q + h.r
 	row := h.r
 	return DoubledCoord{col, row}
 }
 
-func rdoubled_to_cube(h DoubledCoord) Hex {
+func RdoubledToCube(h DoubledCoord) Hex {
 	q := int((h.col - h.row) / 2)
 	r := h.row
 	s := -q - r
 	return Hex{q, r, s}
 }
 
-var layout_pointy = Orientation{math.Sqrt(3.0), math.Sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, math.Sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5}
-var layout_flat = Orientation{3.0 / 2.0, 0.0, math.Sqrt(3.0) / 2.0, math.Sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, math.Sqrt(3.0) / 3.0, 0.0}
+var layoutPointy = Orientation{math.Sqrt(3.0), math.Sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, math.Sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5}
+var layoutFlat = Orientation{3.0 / 2.0, 0.0, math.Sqrt(3.0) / 2.0, math.Sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, math.Sqrt(3.0) / 3.0, 0.0}
 
-func hex_to_pixel(layout Layout, h Hex) Point {
+func HexToPixel(layout Layout, h Hex) Point {
 	M := layout.orientation
 	size := layout.size
 	origin := layout.origin
@@ -270,7 +277,7 @@ func hex_to_pixel(layout Layout, h Hex) Point {
 	return NewPoint(x+origin.x, y+origin.y)
 }
 
-func pixel_to_hex(layout Layout, p Point) FractionalHex {
+func PixelToHex(layout Layout, p Point) FractionalHex {
 	M := layout.orientation
 	size := layout.size
 	origin := layout.origin
@@ -280,18 +287,18 @@ func pixel_to_hex(layout Layout, p Point) FractionalHex {
 	return NewFractionalHex(q, r, -q-r)
 }
 
-func hex_corner_offset(layout Layout, corner int) Point {
+func HexCornerOffset(layout Layout, corner int) Point {
 	M := layout.orientation
 	size := layout.size
 	angle := 2.0 * M_PI * (M.start_angle - float64(corner)) / 6.0
 	return NewPoint(size.x*math.Cos(angle), size.y*math.Sin(angle))
 }
 
-func polygon_corners(layout Layout, h Hex) []Point {
+func PolygonCorners(layout Layout, h Hex) []Point {
 	var corners []Point
-	var center Point = hex_to_pixel(layout, h)
+	var center Point = HexToPixel(layout, h)
 	for i := 0; i < 6; i++ {
-		var offset Point = hex_corner_offset(layout, i)
+		var offset Point = HexCornerOffset(layout, i)
 		corners = append(corners, NewPoint(center.x+offset.x, center.y+offset.y))
 	}
 	return corners
