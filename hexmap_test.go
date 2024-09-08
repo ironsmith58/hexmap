@@ -1,3 +1,4 @@
+// hexmap test, use 'go test'
 package hexmap
 
 import (
@@ -146,23 +147,3 @@ func TestDoubledToCube(t *testing.T) {
 	equal_hex("doubled_to_cube doubled-r", NewHex(1, 2, -3), RdoubledToCube(NewDoubledCoord(4, 2)))
 }
 
-/*  Not needed as go test, or vscode will run all test functions named Test*
-func TestAll(t *testing.T) {
-    TestHexArithmetic(t)
-    TestHexDirection(t)
-    TestHexNeighbor(t)
-    TestHexDiagonal(t)
-    TestHexDistance(t)
-    TestHexRotateRight(t)
-    TestHexRotateLeft(t)
-    TestHexRound(t)
-    TestHexLinedraw(t)
-    TestLayout(t)
-    TestOffsetRoundtrip(t)
-    TestOffsetFromCube(t)
-    TestOffsetToCube(t)
-    TestDoubledRoundtrip(t)
-    TestDoubledFromCube(t)
-    TestDoubledToCube(t)
-}
-*/

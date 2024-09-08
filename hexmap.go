@@ -1,4 +1,3 @@
-// Generated code -- CC0 -- No Rights Reserved -- http://www.redblobgames.com/grids/hexagons/
 package hexmap
 
 // Adapted to golang, 2022-08-15, ironsmith58
@@ -104,7 +103,6 @@ func NewLayout(o Orientation, s Point, c Point) Layout {
 	return Layout{o, s, c}
 }
 
-// Forward declarations
 
 func HexAdd(a Hex, b Hex) Hex {
 	return NewHex(a.q+b.q, a.r+b.r, a.s+b.s)
